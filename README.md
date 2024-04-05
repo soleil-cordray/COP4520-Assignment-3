@@ -141,7 +141,7 @@ Note that the program pauses for 1 second during each guest visit to simulate th
 
 ### Demo 
 
-![Demo Animation](demo/problem2-demo.gif)
+![Demo Animation]()
 
 ### Run
 
