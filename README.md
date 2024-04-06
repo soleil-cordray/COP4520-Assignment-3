@@ -86,15 +86,15 @@ Design and implement a concurrent linked-list that can help the Minotaur’s 4 s
 In your test, simulate this concurrent “Thank you” card writing scenario by dedicating 1 thread per
 servant and assuming that the Minotaur received 500,000 presents from his guests.
 
-### Strategy
+## Strategy
 
-Issues with old strategy:
+### Old Strategy Fallbacks:
 
 -   **Asynchronous Addition/Removal:** the old algorithm allows servants to add presents to the list faster than they're being removed and written "Thank you" notes for. This could lead to an accumulation of unprocessed presents.
 -   **Imbalanced Task Allocation:** the old algorithm allows for servants to not equally distribute between adding and removing tasks, and if more time is spent adding presents than "Thank you" notes, this could lead to an accumulation of unprocessed presents.
 -   **Incorrect Synchronization:** if the old algorithm is not properly synchronized, this could allow servants to add more presents when the priority should be on writing "Thank you" notes for existing presents.
 
-New strategy:
+### New Strategy Improvements:
 
 -   **Dynamic Task Allocation:** servants dynamically switch between adding presents and writing "Thank you" notes based on the system's current needs. If the number of presents waiting to be processed exceeds a certain threshold, servants focus on writing "Thank you" notes to balance the workload and prevent backlog.
 
