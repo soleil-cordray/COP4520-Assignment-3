@@ -42,7 +42,7 @@ git clone https://github.com/soleil-cordray/COP4520-Assignment-3.git
 cd COP4520-Assignment-3
 ```
 
-## Problem 1: The Birthday Presents Party
+# Problem 1: The Birthday Presents Party
 
 The Minotaur’s birthday party was a success. The Minotaur received a lot of presents
 from his guests.
@@ -104,18 +104,18 @@ servant and assuming that the Minotaur received 500,000 presents from his guests
 
 -   **Monitoring and Adjustment:** The system continuously monitors the count of presents and "Thank you" notes to ensure a balanced workload among servants. This dynamic adjustment helps maintain a steady flow of task completion and prevents any single task type from dominating the system.
 
-### Demo
+## Demo
 
 ![Success snapshot](output/problem1-output.png)
 
-### Run
+## Run
 
 1. Open your terminal and navigate to the directory containing the `problem1.cpp` file (see [Clone Repository](#3-clone-repository)).
 2. Compile: `g++ -std=c++11 -pthread problem1.cpp -o problem1`
 3. Run: `./problem1`
 4. Enter the total number of guests when prompted.
 
-## Problem 2: Atmospheric Temperature Reading Module
+# Problem 2: Atmospheric Temperature Reading Module
 
 You are tasked with the design of the module responsible for measuring the atmospheric temperature of
 the next generation Mars Rover, equipped with a multicore CPU and 8 temperature sensors. The sensors
@@ -131,9 +131,9 @@ temperature readings are taken every 1 minute. In your solution, simulate the op
 temperature reading sensor by generating a random number from -100F to 70F at every reading. In your
 report, discuss the efficiency, correctness, and progress guarantee of your program.
 
-### Report
+## Report
 
-Efficiency:
+### Efficiency:
 -   **Multi-threaded Approach:** utilizes a multi-threaded approach to simulate multiple temperature sensors working concurrently, enhancing the ability to efficiently use multi-core processors.
 -   **Parallel Recording:** each sensor's task runs in its own thread, allowing temperature readings to be recorded in parallel.
 -   **Data Storage:** employs std::deque for storing readings, ensuring efficient insertion and removal.
@@ -141,29 +141,29 @@ Efficiency:
     -   Maintaining a sorted data structure.
     -   Using a min-max heap to track the top and bottom temperatures without needing to sort the entire list.
 
-Correctness:
+### Correctness:
 -   **Implementation of Requirements:** accurately implements the requirements of recording temperature readings at regular intervals and compiling a report on the highest and lowest temperatures, along with the largest temperature difference observed in a specific interval.
 -   **Synchronization:** utilizes mutexes and condition variables to synchronize access to the shared list of temperature readings, preventing race conditions or inconsistent states due to concurrent access.
 
-Progress guarantee:
+### Progress guarantee:
 -   **Independent Progress:** ensures basic progress guarantee by allowing each sensor thread to proceed independently after recording a reading or waiting for a condition to be met (e.g., sufficient readings available for removal).
 -   **Contention and Notify_all:** the use of notify_all for waking up potentially multiple threads can lead to contention. This scenario, where multiple threads wake up but only one proceeds while the others return to sleep, can be inefficient in high-contention situations. Potential improvements could include:
     -   More targeted notifications.
     -   Using different condition variables for various types of operations to minimize unnecessary wake-ups and enhance overall progress efficiency.
 
-### Demo
+## Demo
 
 ![Success snapshot](output/problem2-output.png)
 
 
-### Run
+## Run
 
 1. Open your terminal and navigate to the directory containing the `problem2.cpp` file (see [Clone Repository](#3-clone-repository)).
 2. Compile: `g++ -std=c++11 -pthread problem2.cpp -o problem2`
 3. Run: `./problem2`
 4. Enter the total number of guests when prompted.
 
-## Troubleshooting
+# Troubleshooting
 
 -   If you encounter any compilation errors, ensure you have the correct permissions and that your g++ installation is up to date with C++11 support.
 -   If you face issues with the pthread library on Windows, make sure you have the correct threading library for your setup or seek equivalent compilation flags for MinGW or Cygwin.
