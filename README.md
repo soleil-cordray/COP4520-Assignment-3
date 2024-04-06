@@ -96,13 +96,17 @@ Issues with old strategy:
 
 New strategy:
 
--   **Dynamic Task Switching & Prioritized "Thank you" Notes:** allow for dynamic task switching amongst servants by setting a threshold that when reached instructs servants to switch to writing "Thank you" notes rather than adding presents. This prevents a buildup of unprocessed presents.
--   **Balanced Task Allocation:** balance the number of add and remove operations amongst servants by ensuring that for every present added, a "Thank you" note is written. This is done by using a counter to keep track of the number of unprocessed events.
--   **Finer Lock Control:** Allow for multiple servants to add presents in a shared lock and only one servant to remove (process) a present at a time in an exclusive lock.
+-   **Dynamic Task Allocation:** servants dynamically switch between adding presents and writing "Thank you" notes based on the system's current needs. If the number of presents waiting to be processed exceeds a certain threshold, servants focus on writing "Thank you" notes to balance the workload and prevent backlog.
+
+-   **Improved Synchronization:** servants wait on a condition variable that is signaled when there are presents to be processed or space to add more presents. This minimizes idle time and ensures that servants are actively working on tasks as needed.
+
+-   **Efficient Search Operations:** search operations take a snapshot of the current list state, reducing the time the list is locked and allowing other servants to concurrently modify the list. This snapshot approach minimizes the impact on the overall system's performance.
+
+-   **Monitoring and Adjustment:** The system continuously monitors the count of presents and "Thank you" notes to ensure a balanced workload among servants. This dynamic adjustment helps maintain a steady flow of task completion and prevents any single task type from dominating the system.
 
 ### Demo
 
-![Demo Animation]()
+![Success snapshot](output/problem1-output.png)
 
 ### Run
 
@@ -129,17 +133,28 @@ report, discuss the efficiency, correctness, and progress guarantee of your prog
 
 ### Report
 
-**Efficiency:**
+Efficiency:
+-   **Multi-threaded Approach:** utilizes a multi-threaded approach to simulate multiple temperature sensors working concurrently, enhancing the ability to efficiently use multi-core processors.
+-   **Parallel Recording:** each sensor's task runs in its own thread, allowing temperature readings to be recorded in parallel.
+-   **Data Storage:** employs std::deque for storing readings, ensuring efficient insertion and removal.
+-   **Sorting Inefficiency:** Sorting the entire list of readings for each report can be inefficient, particularly as the number of readings increases. A more efficient approach might involve:
+    -   Maintaining a sorted data structure.
+    -   Using a min-max heap to track the top and bottom temperatures without needing to sort the entire list.
 
-**Correctness:**
+Correctness:
+-   **Implementation of Requirements:** accurately implements the requirements of recording temperature readings at regular intervals and compiling a report on the highest and lowest temperatures, along with the largest temperature difference observed in a specific interval.
+-   **Synchronization:** utilizes mutexes and condition variables to synchronize access to the shared list of temperature readings, preventing race conditions or inconsistent states due to concurrent access.
 
-**Progress guarantee:**
-
-Note that the program pauses for 1 second during each guest visit to simulate the visit duration.
+Progress guarantee:
+-   **Independent Progress:** ensures basic progress guarantee by allowing each sensor thread to proceed independently after recording a reading or waiting for a condition to be met (e.g., sufficient readings available for removal).
+-   **Contention and Notify_all:** the use of notify_all for waking up potentially multiple threads can lead to contention. This scenario, where multiple threads wake up but only one proceeds while the others return to sleep, can be inefficient in high-contention situations. Potential improvements could include:
+    -   More targeted notifications.
+    -   Using different condition variables for various types of operations to minimize unnecessary wake-ups and enhance overall progress efficiency.
 
 ### Demo
 
-![Demo Animation]()
+![Success snapshot](output/problem2-output.png)
+
 
 ### Run
 
