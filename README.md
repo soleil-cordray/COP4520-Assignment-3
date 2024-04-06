@@ -108,7 +108,7 @@ servant and assuming that the Minotaur received 500,000 presents from his guests
 
 ![Success snapshot](output/problem1-output.png)
 
-### Run
+## Run
 
 1. Open your terminal and navigate to the directory containing the `problem1.cpp` file (see [Clone Repository](#3-clone-repository)).
 2. Compile: `g++ -std=c++11 -pthread problem1.cpp -o problem1`
@@ -156,7 +156,7 @@ report, discuss the efficiency, correctness, and progress guarantee of your prog
 ![Success snapshot](output/problem2-output.png)
 
 
-### Run
+## Run
 
 1. Open your terminal and navigate to the directory containing the `problem2.cpp` file (see [Clone Repository](#3-clone-repository)).
 2. Compile: `g++ -std=c++11 -pthread problem2.cpp -o problem2`
