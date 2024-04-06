@@ -104,11 +104,11 @@ servant and assuming that the Minotaur received 500,000 presents from his guests
 
 -   **Monitoring and Adjustment:** The system continuously monitors the count of presents and "Thank you" notes to ensure a balanced workload among servants. This dynamic adjustment helps maintain a steady flow of task completion and prevents any single task type from dominating the system.
 
-## Demo
+### Demo
 
 ![Success snapshot](output/problem1-output.png)
 
-## Run
+### Run
 
 1. Open your terminal and navigate to the directory containing the `problem1.cpp` file (see [Clone Repository](#3-clone-repository)).
 2. Compile: `g++ -std=c++11 -pthread problem1.cpp -o problem1`
@@ -151,12 +151,12 @@ report, discuss the efficiency, correctness, and progress guarantee of your prog
     -   More targeted notifications.
     -   Using different condition variables for various types of operations to minimize unnecessary wake-ups and enhance overall progress efficiency.
 
-## Demo
+### Demo
 
 ![Success snapshot](output/problem2-output.png)
 
 
-## Run
+### Run
 
 1. Open your terminal and navigate to the directory containing the `problem2.cpp` file (see [Clone Repository](#3-clone-repository)).
 2. Compile: `g++ -std=c++11 -pthread problem2.cpp -o problem2`
