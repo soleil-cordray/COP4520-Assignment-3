@@ -20,71 +20,55 @@ class ConcurrentLinkedList
 {
 private:
     std::list<int> list;
-    std::mutex mutex;
+    mutable std::mutex mutex;
     std::condition_variable cv;
-    std::atomic<int> presentCount{0}, thankYouNoteCount{0};
-    std::atomic<bool> doneAdding{false};
+    std::atomic<int> presents{0}, notes{0};
     int maxPresents;
 
 public:
     ConcurrentLinkedList(int max) : maxPresents(max) {}
 
-    bool add(int tag)
+    bool add(int id)
     {
-        std::lock_guard<std::mutex> lock(mutex);
-        if (presentCount >= maxPresents || doneAdding)
-        {
-            return false; // Prevent adding if max reached or done adding
-        }
-        auto it = std::lower_bound(list.begin(), list.end(), tag);
-        list.insert(it, tag);
-        presentCount++;
-        cv.notify_one(); // Notify potentially waiting removers
+        std::unique_lock<std::mutex> lock(mutex);
+        if (presents >= maxPresents)
+            return false;
+
+        int tag = presents++;
+        list.push_back(tag);
+        safe_print("Servant " + std::to_string(id) + " added present " + std::to_string(tag + 1));
+        cv.notify_all();
         return true;
     }
 
-    bool remove()
+    bool remove(int id)
     {
         std::unique_lock<std::mutex> lock(mutex);
-        cv.wait(lock, [&]
-                { return !list.empty() || doneAdding; }); // Wait until there's something to remove or we're done adding
+        cv.wait(lock, [this]
+                { return !list.empty() || presents >= maxPresents; });
+
         if (!list.empty())
         {
+            int tag = list.front();
             list.pop_front();
-            thankYouNoteCount++;
+            notes++;
+            safe_print("Servant " + std::to_string(id) + " wrote a 'Thank you' note for present " + std::to_string(tag + 1));
+            cv.notify_all();
             return true;
         }
         return false;
     }
 
-    void finishAdding()
-    {
-        doneAdding = true;
-        cv.notify_all(); // Notify all waiting threads
-    }
-
-    bool isWorkDone() const
-    {
-        std::lock_guard<std::mutex> lock(mutex);
-        return doneAdding && list.empty(); // Check if we're done adding and list is empty
-    }
-
-    bool isAddingDone() const
-    {
-        return doneAdding.load();
-    }
-
-    std::pair<int, int> getTaskCounts() const
-    {
-        return {presentCount.load(), thankYouNoteCount.load()};
-    }
-
-    void waitForAllNotes()
+    bool search(int id, int tag)
     {
         std::unique_lock<std::mutex> lock(mutex);
-        cv.wait(lock, [&]
-                { return list.empty(); }); // Wait until all notes are written
+        bool found = std::find(list.begin(), list.end(), tag) != list.end();
+        safe_print("Servant " + std::to_string(id) + (found ? " confirmed present " : " did not find present ") + std::to_string(tag + 1));
+        return found;
     }
+
+    int getPresentsCount() const { return presents; }
+    int getNotesCount() const { return notes; }
 };
 
 void servantTask(ConcurrentLinkedList &chain, int id, int max)
@@ -93,35 +77,21 @@ void servantTask(ConcurrentLinkedList &chain, int id, int max)
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, max - 1);
 
-    while (!chain.isWorkDone())
-    { // Keep working until done
+    while (chain.getNotesCount() < max)
+    {
         int action = dis(gen) % 3;
-        if (action == 0 && !chain.isAddingDone())
+        if (action == 0)
         {
-            int tag = dis(gen);
-            if (chain.add(tag))
-            {
-                safe_print("Servant " + std::to_string(id) + " added present " + std::to_string(tag));
-            }
+            chain.add(id);
         }
         else if (action == 1)
         {
-            if (chain.remove())
-            {
-                safe_print("Servant " + std::to_string(id) + " wrote a 'Thank you' card");
-            }
+            chain.remove(id);
         }
         else
         {
-            int tag = dis(gen);
-            if (chain.search(tag))
-            {
-                safe_print("Servant " + std::to_string(id) + " confirmed present " + std::to_string(tag) + " is in the chain");
-            }
-            else
-            {
-                safe_print("Servant " + std::to_string(id) + " did not find present " + std::to_string(tag) + " in the chain");
-            }
+            int search_tag = dis(gen) % max;
+            chain.search(id, search_tag);
         }
     }
 }
@@ -129,11 +99,10 @@ void servantTask(ConcurrentLinkedList &chain, int id, int max)
 int main()
 {
     const int numPresents = 100;
-    const int numServants = 4;
     ConcurrentLinkedList chain(numPresents);
-    std::vector<std::thread> servants;
 
-    for (int i = 0; i < numServants; ++i)
+    std::vector<std::thread> servants;
+    for (int i = 0; i < 4; ++i)
     {
         servants.emplace_back(servantTask, std::ref(chain), i + 1, numPresents);
     }
@@ -143,11 +112,7 @@ int main()
         servant.join();
     }
 
-    // Ensure all "Thank You" notes are written
-    chain.waitForAllNotes();
-
-    auto [presentsAdded, thankYouNotesWritten] = chain.getTaskCounts();
-    safe_print("All tasks complete. Presents added: " + std::to_string(presentsAdded) + ", Thank You Notes written: " + std::to_string(thankYouNotesWritten));
+    safe_print("All tasks complete. Presents added: " + std::to_string(chain.getPresentsCount()) + ", Thank You Notes written: " + std::to_string(chain.getNotesCount()));
 
     return 0;
 }
