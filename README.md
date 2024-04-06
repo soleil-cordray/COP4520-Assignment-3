@@ -104,7 +104,7 @@ servant and assuming that the Minotaur received 500,000 presents from his guests
 
 -   **Monitoring and Adjustment:** The system continuously monitors the count of presents and "Thank you" notes to ensure a balanced workload among servants. This dynamic adjustment helps maintain a steady flow of task completion and prevents any single task type from dominating the system.
 
-### Demo
+## Demo
 
 ![Success snapshot](output/problem1-output.png)
 
@@ -151,7 +151,7 @@ report, discuss the efficiency, correctness, and progress guarantee of your prog
     -   More targeted notifications.
     -   Using different condition variables for various types of operations to minimize unnecessary wake-ups and enhance overall progress efficiency.
 
-### Demo
+## Demo
 
 ![Success snapshot](output/problem2-output.png)
 
